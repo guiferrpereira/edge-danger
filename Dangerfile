@@ -1,6 +1,6 @@
 require 'open-uri'
 require 'net/http'
-require File.expand_path('../lib/edge/danger/version.rb', __FILE__)
+require_relative "./lib/edge/danger/version.rb"
 
 module Utils
   def self.code_coverage_markup(results, master_results)
