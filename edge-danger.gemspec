@@ -1,5 +1,4 @@
 require_relative 'lib/edge/danger/version'
-require_relative 'lib/edge/danger/putas'
 
 Gem::Specification.new do |spec|
   spec.name          = "edge-danger"
