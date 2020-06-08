@@ -23,7 +23,6 @@ end
 if ENV['CIRCLE_TOKEN']
   require 'open-uri'
   require 'net/http'
-  require 'edge/danger/utils'
 
   # current pr coverage
   results = Edge::Danger::Utils.code_coverage_report("https://circleci.com/api/v1.1/project/github/#{ENV['CIRCLE_PROJECT_USERNAME']}/#{ENV['CIRCLE_PROJECT_REPONAME']}/#{ENV['CIRCLE_BUILD_NUM']}/artifacts?circle-token=#{ENV['CIRCLE_TOKEN']}")
