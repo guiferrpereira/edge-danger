@@ -1,7 +1,7 @@
 module Edge
   module Danger
-    module Helpers
-      def code_coverage_markup(results, master_results)
+    class Utils
+      def self.code_coverage_markup(results, master_results)
         message = "```diff\n@@           Coverage Diff           @@\n"
         message << "##           master       ##{ENV['CIRCLE_PULL_REQUEST'].split('/').last}   +/-   ##\n"
         message << "=======================================\n"
@@ -15,7 +15,7 @@ module Edge
         message
       end
 
-      def code_coverage_report(artifact_url)
+      def self.code_coverage_report(artifact_url)
         artifacts = JSON.parse(URI.parse(artifact_url).read).map { |a| a['url'] }
 
         coverage_url = artifacts.find { |artifact| artifact.end_with?('coverage/coverage.json') }
@@ -40,5 +40,4 @@ module Edge
   end
 end
 
-# + Hits         8657     8658    +1
-# + Misses       8402     8401    -1
+

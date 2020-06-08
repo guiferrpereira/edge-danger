@@ -1,5 +1,5 @@
 require 'edge/danger/version'
-require 'edge/danger/helpers'
+require 'edge/danger/utils'
 
 module Edge
   module Danger
