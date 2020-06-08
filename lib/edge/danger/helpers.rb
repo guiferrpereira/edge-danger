@@ -8,8 +8,8 @@ module Helpers
     message << "  Files      " + justify_text("#{master_results ? master_results['files']&.count : '-'}", 6) + justify_text("#{results['files']&.count}", 9) + "\n"
     message << "  Lines      " + justify_text("#{master_results ? master_results['metrics']['total_lines'] : '-'}", 6) + justify_text("#{results['metrics']['total_lines']}", 9) + "\n"
     message << "=======================================\n"
-    message << "  + Hits       " + justify_text("#{master_results ? master_results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['covered_lines']}", 9) + "\n"
-    message << "  + Misses     " + justify_text("#{master_results ? master_results['metrics']['total_lines'] - results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['total_lines'] - results['metrics']['covered_lines']}", 9) + "\n```"
+    message << "  + Hits       " + justify_text("#{master_results ? master_results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['covered_lines']}", 9) + " +1 \n"
+    message << "  + Misses     " + justify_text("#{master_results ? master_results['metrics']['total_lines'] - results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['total_lines'] - results['metrics']['covered_lines']}", 9) + " -1 \n```"
     message
   end
 
