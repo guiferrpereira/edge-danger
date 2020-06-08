@@ -6,14 +6,14 @@ module Utils
     message = "```diff\n@@           Coverage Diff           @@\n"
     message << "##           master       ##{ENV['CIRCLE_PULL_REQUEST'].split('/').last}   +/-   ##\n"
     message << "=======================================\n"
-    message << "  Coverage   " + justify_text("#{master_results ? master_results['metrics']['covered_percent'].round(2).to_s + '%' : '-'}", 6) + justify_text("#{results['metrics']['covered_percent'].round(2)}%", 9) + "\n"
+    message << add_line('Coverage', results.try(:[], 'metrics').try(:[], 'covered_percent').try(:round, 2), master_results.try(:[], 'metrics').try(:[], 'covered_percent').try(:round, 2), '%')
     message << "=======================================\n"
-    message << "  Files      " + justify_text("#{master_results ? master_results['files']&.count : '-'}", 6) + justify_text("#{results['files']&.count}", 9) + "\n"
+    message << add_line('Files', results.try(:[], 'files')&.count, master_results.try(:[], 'files')&.count)
     message << "  Lines      " + justify_text("#{master_results ? master_results['metrics']['total_lines'] : '-'}", 6) + justify_text("#{results['metrics']['total_lines']}", 9) + "\n"
     message << "=======================================\n"
-    message << "  + Hits       " + justify_text("#{master_results ? master_results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['covered_lines']}", 9) + " +1 \n"
-    message << "  + Misses     " + justify_text("#{master_results ? master_results['metrics']['total_lines'] - results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['total_lines'] - results['metrics']['covered_lines']}", 9) + " -1 \n```"
-    message
+    message << "  Hits       " + justify_text("#{master_results ? master_results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['covered_lines']}", 9) + "\n"
+    message << "  Misses     " + justify_text("#{master_results ? master_results['metrics']['total_lines'] - results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['total_lines'] - results['metrics']['covered_lines']}", 9) + "\n"
+    message << "```"
   end
 
   def self.code_coverage_report(artifact_url)
@@ -31,6 +31,12 @@ module Utils
   end
 
   private
+
+  def self.add_line(title, current, latest, symbol=nil)
+    return "  #{title}   #{justify_text('-', 6)}#{justify_text(current + symbol, 9)}\n" if !master_results
+
+    "  #{title}   #{justify_text(latest + symbol, 6)}#{justify_text(current + symbol, 9)}\n"
+  end
 
   def self.justify_text(string, adjust)
     adjust = string.length + adjust
