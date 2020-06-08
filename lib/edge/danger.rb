@@ -1,4 +1,5 @@
-require "edge/danger/version"
+require 'edge/danger/version'
+require 'edge/danger/helpers'
 
 module Edge
   module Danger
