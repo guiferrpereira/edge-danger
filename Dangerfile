@@ -3,15 +3,27 @@ require 'net/http'
 
 module Utils
   def self.code_coverage_markup(results, master_results)
-    message = "```diff\n@@           Coverage Diff           @@\n"
-    message << "##           master       ##{ENV['CIRCLE_PULL_REQUEST'].split('/').last}   +/-   ##\n"
-    message << "=======================================\n"
-    message << add_line('Coverage', results.dig(:metrics, :covered_percent), master_results ? master_results.dig(:metrics, :covered_percent) : nil, '%')
-    message << "=======================================\n"
-    message << add_line('Files', results.dig(:files)&.count, master_results ? master_results.dig(:files)&.count : nil)
-    message << add_line('Lines', results.dig(:metrics, :total_lines), master_results ? master_results.dig(:metrics, :total_lines) : nil)
-    message << "=======================================\n"
-    message << add_line('Misses', (results.dig(:metrics, :total_lines) || 0) - (results.dig(:metrics, :covered_lines) || 0), master_results ? (master_results.dig(:metrics, :total_lines) || 0) - (master_results.dig(:metrics, :covered_lines) || 0) : nil)
+    @current_covered_percent = results.dig('metrics', 'covered_percent').round(2)
+    @current_files_count = results.dig('files')&.count
+    @current_total_lines = results.dig('metrics', 'total_lines')
+    @current_misses_count = @current_total_lines - results.dig('metrics', 'covered_lines')
+
+    if master_results
+      @master_covered_percent = master_results.dig('metrics', 'covered_percent').round(2)
+      @master_files_count = master_results.dig('files')&.count
+      @master_total_lines = master_results.dig('metrics', 'total_lines')
+      @master_misses_count = @master_total_lines - master_results.dig('metrics', 'covered_lines')
+    end
+
+    message = "```diff\n@@           Coverage Diff            @@\n"
+    message << "## #{justify_text('master', 16)} #{justify_text('#' + ENV['CIRCLE_PULL_REQUEST'].split('/').last, 8)} #{justify_text('+/-', 7)} #{justify_text('##', 3)}\n"
+    message << separator_line
+    message << new_line('Coverage', @current_covered_percent, @master_covered_percent, '%')
+    message << separator_line
+    message << new_line('Files', @current_files_count, @master_files_count)
+    message << new_line('Lines', @current_total_lines, @master_total_lines)
+    message << separator_line
+    message << new_line('Misses', @current_misses_count, @master_misses_count)
     message << "```"
   end
 
@@ -31,16 +43,28 @@ module Utils
 
   private
 
-  def self.add_line(title, current, latest, symbol=nil)
-    return "  #{title}   #{justify_text('-', 6)}#{justify_text(current.to_s + symbol.to_s, 9)}\n" if !latest
-
-    "  #{title}   #{justify_text(latest.to_s + symbol.to_s, 6)}#{justify_text(current.to_s + symbol.to_s, 9)}\n"
+  def self.separator_line
+    "========================================\n"
   end
 
-  def self.justify_text(string, adjust)
-    adjust = string.length + adjust
+  def self.new_line(title, current, master, symbol=nil)
+    formatter = symbol ? '%+.2f' : '%+d'
+    currrent_formatted = current.to_s + symbol.to_s
+    master_formatted = master ? master.to_s + symbol.to_s : '-'
+    prep = (master_formatted != '-' && current - master != 0) ? '+ ' : '  '
 
-    string.rjust(adjust - string.length)
+    line = data_string(title, master_formatted, currrent_formatted, prep)
+    line << justify_text(sprintf(formatter, current - master) + symbol.to_s, 8) if prep == '+ '
+    line << "\n"
+    line
+  end
+
+  def self.justify_text(string, adjust, position='right')
+    string.send(position == 'right' ? :rjust : :ljust, adjust)
+  end
+
+  def self.data_string(title, master, current, prep)
+    "#{prep}#{justify_text(title, 9, 'left')} #{justify_text(master, 7)}#{justify_text(current, 9)}"
   end
 end
 
