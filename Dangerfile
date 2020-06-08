@@ -1,4 +1,4 @@
-danger.import_plugin('danger-rcov')
+danger.import_plugin('https://raw.githubusercontent.com/guiferrpereira/danger-rcov/master/lib/rcov/plugin.rb')
 
 require 'open-uri'
 require 'net/http'
