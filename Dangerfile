@@ -32,9 +32,9 @@ module Utils
   private
 
   def self.add_line(title, current, latest, symbol=nil)
-    return "  #{title}   #{justify_text('-', 6)}#{justify_text(current.to_s + symbol, 9)}\n" if !latest
+    return "  #{title}   #{justify_text('-', 6)}#{justify_text(current.to_s + symbol.to_s, 9)}\n" if !latest
 
-    "  #{title}   #{justify_text(latest.to_s + symbol, 6)}#{justify_text(current.to_s + symbol, 9)}\n"
+    "  #{title}   #{justify_text(latest.to_s + symbol.to_s, 6)}#{justify_text(current.to_s + symbol.to_s, 9)}\n"
   end
 
   def self.justify_text(string, adjust)
