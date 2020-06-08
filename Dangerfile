@@ -11,7 +11,7 @@ module Utils
     message << add_line('Files', results.dig(:files)&.count, master_results ? master_results.dig(:files)&.count : nil)
     message << add_line('Lines', results.dig(:metrics, :total_lines), master_results ? master_results.dig(:metrics, :total_lines) : nil)
     message << "=======================================\n"
-    message << add_line('Misses', results ? results.dig(:metrics, :total_lines) - results.dig(:metrics, :covered_lines), master_results ? (master_results.dig(:metrics, :total_lines) - master_results.dig(:metrics, :covered_lines)) : nil)
+    message << add_line('Misses', results ? results.dig(:metrics, :total_lines) - results.dig(:metrics, :covered_lines) : nil, master_results ? (master_results.dig(:metrics, :total_lines) - master_results.dig(:metrics, :covered_lines)) : nil)
     message << "```"
   end
 
