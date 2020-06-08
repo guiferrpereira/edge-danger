@@ -6,9 +6,9 @@ module Utils
     message = "```diff\n@@           Coverage Diff           @@\n"
     message << "##           master       ##{ENV['CIRCLE_PULL_REQUEST'].split('/').last}   +/-   ##\n"
     message << "=======================================\n"
-    message << add_line('Coverage', results.try(:[], 'metrics').try(:[], 'covered_percent').try(:round, 2), master_results.try(:[], 'metrics').try(:[], 'covered_percent').try(:round, 2), '%')
+    message << add_line('Coverage', results.dig(:metrics, :covered_percent).try(:round, 2), master_results.dig(:metrics, :covered_percent).try(:round, 2), '%')
     message << "=======================================\n"
-    message << add_line('Files', results.try(:[], 'files')&.count, master_results.try(:[], 'files')&.count)
+    message << add_line('Files', results.dig(:files)&.count, master_results.dig(:files)&.count)
     message << "  Lines      " + justify_text("#{master_results ? master_results['metrics']['total_lines'] : '-'}", 6) + justify_text("#{results['metrics']['total_lines']}", 9) + "\n"
     message << "=======================================\n"
     message << "  Hits       " + justify_text("#{master_results ? master_results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['covered_lines']}", 9) + "\n"
