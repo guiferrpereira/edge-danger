@@ -6,13 +6,12 @@ module Utils
     message = "```diff\n@@           Coverage Diff           @@\n"
     message << "##           master       ##{ENV['CIRCLE_PULL_REQUEST'].split('/').last}   +/-   ##\n"
     message << "=======================================\n"
-    message << add_line('Coverage', results.dig(:metrics, :covered_percent).try(:round, 2), master_results.dig(:metrics, :covered_percent).try(:round, 2), '%')
+    message << add_line('Coverage', results.dig(:metrics, :covered_percent), master_results ? master_results.dig(:metrics, :covered_percent) : nil, '%')
     message << "=======================================\n"
-    message << add_line('Files', results.dig(:files)&.count, master_results.dig(:files)&.count)
-    message << "  Lines      " + justify_text("#{master_results ? master_results['metrics']['total_lines'] : '-'}", 6) + justify_text("#{results['metrics']['total_lines']}", 9) + "\n"
+    message << add_line('Files', results.dig(:files)&.count, master_results ? master_results.dig(:files)&.count : nil)
+    message << add_line('Lines', results.dig(:metrics, :total_lines), master_results ? master_results.dig(:metrics, :total_lines) : nil)
     message << "=======================================\n"
-    message << "  Hits       " + justify_text("#{master_results ? master_results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['covered_lines']}", 9) + "\n"
-    message << "  Misses     " + justify_text("#{master_results ? master_results['metrics']['total_lines'] - results['metrics']['covered_lines'] : '-'}", 6) + justify_text("#{results['metrics']['total_lines'] - results['metrics']['covered_lines']}", 9) + "\n"
+    message << add_line('Misses', results.dig(:metrics, :total_lines) - results.dig(:metrics, :covered_lines), master_results ? master_results.dig(:metrics, :total_lines) - master_results.dig(:metrics, :covered_lines) : nil)
     message << "```"
   end
 
@@ -33,7 +32,7 @@ module Utils
   private
 
   def self.add_line(title, current, latest, symbol=nil)
-    return "  #{title}   #{justify_text('-', 6)}#{justify_text(current + symbol, 9)}\n" if !master_results
+    return "  #{title}   #{justify_text('-', 6)}#{justify_text(current + symbol, 9)}\n" if !latest
 
     "  #{title}   #{justify_text(latest + symbol, 6)}#{justify_text(current + symbol, 9)}\n"
   end
