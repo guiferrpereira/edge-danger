@@ -1,5 +1,5 @@
 module Helpers
-  def self.code_coverage_markup(results, master_results)
+  def code_coverage_markup(results, master_results)
     message = "```diff\n@@           Coverage Diff           @@\n"
     message << "##           master       ##{ENV['CIRCLE_PULL_REQUEST'].split('/').last}   +/-   ##\n"
     message << "=======================================\n"
@@ -13,7 +13,7 @@ module Helpers
     message
   end
 
-  def self.code_coverage_report(artifact_url)
+  def code_coverage_report(artifact_url)
     artifacts = JSON.parse(URI.parse(artifact_url).read).map { |a| a['url'] }
 
     coverage_url = artifacts.find { |artifact| artifact.end_with?('coverage/coverage.json') }
