@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   # spec.metadata["source_code_uri"] = ""
   # spec.metadata["changelog_uri"] = ""
 
-  spec.add_runtime_dependency 'danger', '~> 5.0'
+  spec.add_runtime_dependency 'danger', '~> 8.0'
 
   spec.add_development_dependency 'rspec', '~> 3.2'
 
