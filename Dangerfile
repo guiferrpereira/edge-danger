@@ -21,6 +21,7 @@ if Dir.exist?('spec')
 end
 
 if ENV['CIRCLE_TOKEN']
+  require_relative 'lib/edge/danger/utils'
   require 'open-uri'
   require 'net/http'
 
