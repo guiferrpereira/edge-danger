@@ -31,7 +31,7 @@ module Edge
 
       private
 
-      def justify_text(string, adjust)
+      def self.justify_text(string, adjust)
         adjust = string.length + adjust
 
         string.rjust(adjust - string.length)
