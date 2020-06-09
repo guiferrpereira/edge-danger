@@ -1,75 +1,5 @@
 danger.import_plugin('https://raw.githubusercontent.com/guiferrpereira/danger-rcov/master/lib/rcov/plugin.rb')
 
-require 'open-uri'
-require 'net/http'
-
-module Utils
-  def self.code_coverage_markup(results, master_results)
-    @current_covered_percent = results.dig('metrics', 'covered_percent').round(2)
-    @current_files_count = results.dig('files')&.count
-    @current_total_lines = results.dig('metrics', 'total_lines')
-    @current_misses_count = @current_total_lines - results.dig('metrics', 'covered_lines')
-
-    if master_results
-      @master_covered_percent = master_results.dig('metrics', 'covered_percent').round(2)
-      @master_files_count = master_results.dig('files')&.count
-      @master_total_lines = master_results.dig('metrics', 'total_lines')
-      @master_misses_count = @master_total_lines - master_results.dig('metrics', 'covered_lines')
-    end
-
-    message = "```diff\n@@           Coverage Diff            @@\n"
-    message << "## #{justify_text('master', 16)} #{justify_text('#' + ENV['CIRCLE_PULL_REQUEST'].split('/').last, 8)} #{justify_text('+/-', 7)} #{justify_text('##', 3)}\n"
-    message << separator_line
-    message << new_line('Coverage', @current_covered_percent, @master_covered_percent, '%')
-    message << separator_line
-    message << new_line('Files', @current_files_count, @master_files_count)
-    message << new_line('Lines', @current_total_lines, @master_total_lines)
-    message << separator_line
-    message << new_line('Misses', @current_misses_count, @master_misses_count)
-    message << "```"
-  end
-
-  def self.code_coverage_report(artifact_url)
-    artifacts = JSON.parse(URI.parse(artifact_url).read).map { |a| a['url'] }
-
-    coverage_url = artifacts.find { |artifact| artifact.end_with?('coverage/coverage.json') }
-
-    return nil if !coverage_url
-
-    uri = URI.parse("#{coverage_url}?circle-token=#{ENV['CIRCLE_TOKEN']}")
-
-    response = Net::HTTP.get_response(uri)
-
-    JSON.parse(response.body)
-  end
-
-  private
-
-  def self.separator_line
-    "========================================\n"
-  end
-
-  def self.new_line(title, current, master, symbol=nil)
-    formatter = symbol ? '%+.2f' : '%+d'
-    currrent_formatted = current.to_s + symbol.to_s
-    master_formatted = master ? master.to_s + symbol.to_s : '-'
-    prep = (master_formatted != '-' && current - master != 0) ? '+ ' : '  '
-
-    line = data_string(title, master_formatted, currrent_formatted, prep)
-    line << justify_text(sprintf(formatter, current - master) + symbol.to_s, 8) if prep == '+ '
-    line << "\n"
-    line
-  end
-
-  def self.justify_text(string, adjust, position='right')
-    string.send(position == 'right' ? :rjust : :ljust, adjust)
-  end
-
-  def self.data_string(title, master, current, prep)
-    "#{prep}#{justify_text(title, 9, 'left')} #{justify_text(master, 7)}#{justify_text(current, 9)}"
-  end
-end
-
 fail('Please provide a summary in the PR description') if (github.pr_body || '').length < 5
 
 warn(':exclamation: Big PR') if git.lines_of_code > 500
@@ -91,7 +21,6 @@ if Dir.exist?('spec')
 end
 
 if ENV['CIRCLE_TOKEN']
-
   markdown rcov.report(
     current_url: "https://circleci.com/api/v1.1/project/github/#{ENV['CIRCLE_PROJECT_USERNAME']}/#{ENV['CIRCLE_PROJECT_REPONAME']}/#{ENV['CIRCLE_BUILD_NUM']}/artifacts?circle-token=#{ENV['CIRCLE_TOKEN']}",
     master_url: "https://circleci.com/api/v1.1/project/github/#{ENV['CIRCLE_PROJECT_USERNAME']}/#{ENV['CIRCLE_PROJECT_REPONAME']}/latest/artifacts?circle-token=#{ENV['CIRCLE_TOKEN']}&branch=master"
